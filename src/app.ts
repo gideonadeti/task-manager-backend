@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import indexRouter from "./routes/index";
+import authRouter from "./routes/auth";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 
 // API Routes
 app.use("/api", indexRouter);
+app.use("/api/auth", authRouter);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
