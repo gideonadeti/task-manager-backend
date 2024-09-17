@@ -1,7 +1,7 @@
 {
-  "name": "name",
+  "name": "task-manager-backend",
   "version": "1.0.0",
-  "description": "description",
+  "description": "Backend for the task manager app",
   "main": "build/index.js",
   "scripts": {
     "start": "node build/index.js",
