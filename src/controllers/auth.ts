@@ -12,6 +12,7 @@ import {
   createUser,
   createRefreshToken,
   readRefreshToken,
+  readUserByEmail,
 } from "../db";
 import {
   generateAccessToken,
@@ -128,3 +129,77 @@ export async function handleRefreshTokenPost(req: Request, res: Response) {
     res.sendStatus(500);
   }
 }
+
+export const handleSignInPost = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .matches(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/)
+    .withMessage("Enter a valid email")
+    .escape(),
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters")
+    .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[#?!@$%^&*-]).{8,}$/)
+    .withMessage(
+      "Password must include uppercase, lowercase, number, and special character"
+    ),
+
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body as { email: string; password: string };
+
+    console.log(email, password)
+
+    try {
+      const user = await readUserByEmail(email);
+
+      if (!user) {
+        return res.status(401).json({
+          errors: [{ message: "Incorrect email or password" }],
+        });
+      }
+
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({
+          errors: [
+            {
+              message: "Incorrect username or password",
+            },
+          ],
+        });
+      }
+
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
+
+      await createRefreshToken(refreshToken, user.id);
+
+      res.json({
+        message: "Signing you in...",
+        accessToken,
+        refreshToken,
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        errors: [
+          {
+            message:
+              "An error occurred during sign in. Please try again later.",
+          },
+        ],
+      });
+    }
+  },
+];

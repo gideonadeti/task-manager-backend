@@ -12,12 +12,12 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 export function generateAccessToken(userId: string) {
   return jwt.sign({ id: userId }, ACCESS_TOKEN_SECRET, {
-    expiresIn: 60,
+    expiresIn: "30m",
   });
 }
 
 export function generateRefreshToken(userId: string) {
   return jwt.sign({ id: userId }, REFRESH_TOKEN_SECRET, {
-    expiresIn: 120,
+    expiresIn: "30d",
   });
 }

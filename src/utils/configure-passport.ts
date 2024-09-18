@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import passport from "passport";
 
-import { readUser } from "../db";
+import { readUserById } from "../db";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ export function configurePassport() {
   passport.use(
     new JwtStrategy(opts, async (jwtPayload, done) => {
       try {
-        const user = await readUser(jwtPayload.id);
+        const user = await readUserById(jwtPayload.id);
 
         if (user) {
           return done(null, user);

@@ -43,17 +43,27 @@ export async function createUser({
   }
 }
 
-export async function readUser(id: string) {
+export async function readUserById(id: string) {
   try {
     const user = await prisma.user.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
     });
 
     return user;
   } catch (error) {
-    console.error("Error reading user:", error);
+    console.error("Error reading user by Id:", error);
+  }
+}
+
+export async function readUserByEmail(email: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Error reading user by email:", error);
   }
 }
 
