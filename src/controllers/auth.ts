@@ -2,8 +2,17 @@ import { body, validationResult } from "express-validator";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "@prisma/client";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-import { checkEmailExistence, createUser, createRefreshToken } from "../db";
+dotenv.config();
+
+import {
+  checkEmailExistence,
+  createUser,
+  createRefreshToken,
+  readRefreshToken,
+} from "../db";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -39,6 +48,7 @@ export const handleSignUpPost = [
 
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
@@ -58,8 +68,8 @@ export const handleSignUpPost = [
       const userData = { ...otherValues, email, password: hashedPassword };
       const newUser = (await createUser(userData)) as User;
 
-      const accessToken = generateAccessToken(newUser);
-      const refreshToken = generateRefreshToken(newUser);
+      const accessToken = generateAccessToken(newUser.id);
+      const refreshToken = generateRefreshToken(newUser.id);
 
       await createRefreshToken(refreshToken, newUser.id);
 
@@ -70,6 +80,7 @@ export const handleSignUpPost = [
       });
     } catch (error) {
       console.error(error);
+
       res.status(500).json({
         errors: [
           {
@@ -81,3 +92,39 @@ export const handleSignUpPost = [
     }
   },
 ];
+
+export async function handleRefreshTokenPost(req: Request, res: Response) {
+  const { refreshToken } = req.body;
+
+  try {
+    const storedRefreshToken = await readRefreshToken(refreshToken);
+
+    if (!storedRefreshToken) {
+      return res.sendStatus(403);
+    }
+
+    if (!process.env.REFRESH_TOKEN_SECRET) {
+      throw new Error("REFRESH_TOKEN_SECRET environment variable is missing");
+    }
+
+    jwt.verify(
+      storedRefreshToken.token,
+      process.env.REFRESH_TOKEN_SECRET,
+      (error, decoded) => {
+        if (error || !decoded) {
+          return res.sendStatus(403);
+        }
+
+        const userId = (decoded as jwt.JwtPayload).id as string;
+
+        const accessToken = generateAccessToken(userId);
+
+        res.json({ accessToken });
+      }
+    );
+  } catch (error) {
+    console.error("Error handling refresh token post:", error);
+
+    res.sendStatus(500);
+  }
+}

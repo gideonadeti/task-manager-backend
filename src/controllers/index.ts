@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
+import { User } from "@prisma/client";
 
-export function indexController(req: Request, res: Response) {
-  res.json({ message: "Success" });
+export function handleUserGet(req: Request, res: Response) {
+  const { firstName, lastName, email } = req.user as User;
+
+  res.json({ user: { firstName, lastName, email } });
 }

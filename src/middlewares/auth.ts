@@ -16,7 +16,7 @@ export default function auth(req: Request, res: Response, next: NextFunction) {
         console.error("Authentication error:", error);
 
         return res.status(500).json({
-          errors: [{ message: "Internal server error" }],
+          errors: [{ message: "Internal Server Error" }],
         });
       }
 
@@ -24,10 +24,10 @@ export default function auth(req: Request, res: Response, next: NextFunction) {
         if (info instanceof TokenExpiredError) {
           return res
             .status(401)
-            .json({ errors: [{ message: "Token has expired" }] });
+            .json({ errors: [{ message: "Access token has expired" }] });
         }
 
-        return res.status(401).json({ errors: [{ message: "Unauthorized" }] });
+        return res.sendStatus(401);
       }
 
       req.user = user;

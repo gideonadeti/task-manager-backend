@@ -65,5 +65,21 @@ export async function createRefreshToken(refreshToken: string, userId: string) {
         userId,
       },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error creating refresh token:", error);
+  }
+}
+
+export async function readRefreshToken(refreshToken: string) {
+  try {
+    const storedRefreshToken = await prisma.refreshToken.findUnique({
+      where: {
+        token: refreshToken,
+      },
+    });
+
+    return storedRefreshToken;
+  } catch (error) {
+    console.error("Error checking refresh token existence:", error);
+  }
 }

@@ -26,9 +26,13 @@ app.use((req: Request, res: Response) => {
 
 // Error Handler
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  res
-    .status(error.status || 500)
-    .json({ message: error.message || "Internal Server Error" });
+  res.status(error.status || 500).json({
+    errors: [
+      {
+        message: error.message || "Internal Server Error",
+      },
+    ],
+  });
 });
 
 export default app;
