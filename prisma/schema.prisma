@@ -31,7 +31,6 @@ model RefreshToken {
 model TaskGroup {
   id        String   @id @default(uuid())
   name      String
-  isDefault Boolean  @default(false)
   tasks     Task[]
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
