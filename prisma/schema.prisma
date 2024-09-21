@@ -15,6 +15,7 @@ model User {
   email         String         @unique
   password      String
   refreshTokens RefreshToken[]
+  taskGroups    TaskGroup[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -23,6 +24,40 @@ model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+}
+
+model TaskGroup {
+  id        String   @id @default(uuid())
+  name      String
+  isDefault Boolean  @default(false)
+  tasks     Task[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  isCompleted Boolean      @default(false)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?
+  taskGroup   TaskGroup    @relation(fields: [taskGroupId], references: [id], onDelete: Cascade)
+  taskGroupId String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([taskGroupId, title])
+}
+
+enum TaskPriority {
+  HIGH
+  MEDIUM
+  LOW
 }
