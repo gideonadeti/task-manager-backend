@@ -37,8 +37,6 @@ model TaskGroup {
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([userId, name])
 }
 
 model Task {
@@ -52,8 +50,6 @@ model Task {
   taskGroupId String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-
-  @@unique([taskGroupId, title])
 }
 
 enum TaskPriority {
