@@ -18,6 +18,7 @@ model User {
   taskGroups    TaskGroup[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  tasks         Task[]
 }
 
 model RefreshToken {
@@ -45,6 +46,8 @@ model Task {
   isCompleted Boolean      @default(false)
   priority    TaskPriority @default(MEDIUM)
   dueDate     DateTime?
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
   taskGroup   TaskGroup    @relation(fields: [taskGroupId], references: [id], onDelete: Cascade)
   taskGroupId String
   createdAt   DateTime     @default(now())
