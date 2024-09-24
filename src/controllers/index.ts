@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import { User } from "@prisma/client";
 
-export function handleUserGet(req: Request, res: Response) {
-  const { firstName, lastName, email } = req.user as User;
+import { readTaskGroups } from "../db";
 
-  res.json({ user: { firstName, lastName, email } });
+export async function handleUserDataGet(req: Request, res: Response) {
+  const { id, firstName, lastName, email } = req.user as User;
+  const taskGroups = await readTaskGroups(id);
+
+  res.json({ user: { firstName, lastName, email }, taskGroups });
 }

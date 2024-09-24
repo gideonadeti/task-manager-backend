@@ -1,10 +1,10 @@
 import { Router } from "express";
 
 import auth from "../middlewares/auth";
-import { handleUserGet } from "../controllers/index";
+import { handleUserDataGet } from "../controllers/index";
 
 const router = Router();
 
-router.get("/user", auth, handleUserGet);
+router.get("/user-data", auth, handleUserDataGet);
 
 export default router;
