@@ -157,8 +157,6 @@ export const handleSignInPost = [
 
     const { email, password } = req.body as { email: string; password: string };
 
-    console.log(email, password)
-
     try {
       const user = await readUserByEmail(email);
 
