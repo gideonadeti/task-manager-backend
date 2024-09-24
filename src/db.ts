@@ -34,6 +34,11 @@ export async function createUser({
         lastName,
         email,
         password,
+        taskGroups: {
+          create: {
+            name: "Inbox",
+          },
+        },
       },
     });
 
@@ -91,5 +96,39 @@ export async function readRefreshToken(refreshToken: string) {
     return storedRefreshToken;
   } catch (error) {
     console.error("Error checking refresh token existence:", error);
+  }
+}
+
+export async function readTaskGroups(userId: string) {
+  try {
+    const taskGroups = await prisma.taskGroup.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        tasks: true,
+      },
+    });
+
+    return taskGroups;
+  } catch (error) {
+    console.error(
+      `Error reading task groups of user with ID: ${userId}:`,
+      error
+    );
+  }
+}
+
+export async function readTasks(userId: string) {
+  try {
+    const tasks = await prisma.task.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return tasks;
+  } catch (error) {
+    console.error("Error reading tasks:", error);
   }
 }
