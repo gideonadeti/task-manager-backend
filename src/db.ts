@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Task } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +13,7 @@ export async function checkEmailExistence(email: string) {
     return user !== null;
   } catch (error) {
     console.error("Error checking email existence:", error);
+    throw error;
   }
 }
 
@@ -45,6 +46,7 @@ export async function createUser({
     return newUser;
   } catch (error) {
     console.error("Error creating user:", error);
+    throw error;
   }
 }
 
@@ -57,6 +59,7 @@ export async function readUserById(id: string) {
     return user;
   } catch (error) {
     console.error("Error reading user by Id:", error);
+    throw error;
   }
 }
 
@@ -69,6 +72,7 @@ export async function readUserByEmail(email: string) {
     return user;
   } catch (error) {
     console.error("Error reading user by email:", error);
+    throw error;
   }
 }
 
@@ -82,6 +86,7 @@ export async function createRefreshToken(refreshToken: string, userId: string) {
     });
   } catch (error) {
     console.error("Error creating refresh token:", error);
+    throw error;
   }
 }
 
@@ -96,6 +101,7 @@ export async function readRefreshToken(refreshToken: string) {
     return storedRefreshToken;
   } catch (error) {
     console.error("Error checking refresh token existence:", error);
+    throw error;
   }
 }
 
@@ -116,6 +122,7 @@ export async function readTaskGroups(userId: string) {
       `Error reading task groups of user with ID: ${userId}:`,
       error
     );
+    throw error;
   }
 }
 
@@ -130,5 +137,30 @@ export async function readTasks(userId: string) {
     return tasks;
   } catch (error) {
     console.error("Error reading tasks:", error);
+    throw error;
+  }
+}
+
+export async function createTask(
+  task: Task,
+  userId: string,
+  taskGroupId: string
+) {
+  try {
+    const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+
+    await prisma.task.create({
+      data: {
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        dueDate,
+        userId,
+        taskGroupId,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating task", error);
+    throw error;
   }
 }
