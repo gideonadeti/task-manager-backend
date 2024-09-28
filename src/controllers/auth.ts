@@ -104,13 +104,9 @@ export async function handleRefreshTokenPost(req: Request, res: Response) {
       return res.sendStatus(403);
     }
 
-    if (!process.env.REFRESH_TOKEN_SECRET) {
-      throw new Error("REFRESH_TOKEN_SECRET environment variable is missing");
-    }
-
     jwt.verify(
       storedRefreshToken.token,
-      process.env.REFRESH_TOKEN_SECRET,
+      process.env.REFRESH_TOKEN_SECRET!,
       (error, decoded) => {
         if (error || !decoded) {
           return res.sendStatus(403);

@@ -6,13 +6,9 @@ import { readUserById } from "../db";
 
 dotenv.config();
 
-if (!process.env.ACCESS_TOKEN_SECRET) {
-  throw new Error("ACCESS_TOKEN_SECRET environment variable is missing");
-}
-
 const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+  secretOrKey: process.env.ACCESS_TOKEN_SECRET!,
 };
 
 export function configurePassport() {
