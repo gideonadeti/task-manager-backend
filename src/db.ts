@@ -164,3 +164,46 @@ export async function createTask(
     throw error;
   }
 }
+
+export async function readUserByGoogleId(googleId: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        googleId,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Error reading user from Google ID:", error);
+    throw error;
+  }
+}
+
+export async function createUserFromGoogle(
+  googleId: string,
+  firstName: string,
+  lastName: string,
+  email: string
+) {
+  try {
+    const newUser = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        googleId,
+        taskGroups: {
+          create: {
+            name: "Inbox",
+          },
+        },
+      },
+    });
+
+    return newUser;
+  } catch (error) {
+    console.error("Error creating user from Google:", error);
+    throw error;
+  }
+}
