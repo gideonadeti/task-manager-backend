@@ -10,10 +10,11 @@ datasource db {
 
 model User {
   id            String         @id @default(uuid())
+  googleId      String?        @unique
   firstName     String
   lastName      String
   email         String         @unique
-  password      String
+  password      String?
   refreshTokens RefreshToken[]
   taskGroups    TaskGroup[]
   createdAt     DateTime       @default(now())
