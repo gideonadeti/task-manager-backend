@@ -162,7 +162,9 @@ export const handleSignInPost = [
         });
       }
 
-      const validPassword = await bcrypt.compare(password, user.password);
+      const userPassword = user.password as string;
+      const validPassword = await bcrypt.compare(password, userPassword);
+
       if (!validPassword) {
         return res.status(401).json({
           errors: [
@@ -197,3 +199,21 @@ export const handleSignInPost = [
     }
   },
 ];
+
+export async function handleGoogleCallbackGet(req: Request, res: Response) {
+  try {
+    const user = req.user as User;
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    await createRefreshToken(refreshToken, user.id);
+
+    res.redirect(
+      `http://localhost:5173/auth/google-redirect?accessToken=${accessToken}&refreshToken=${refreshToken}`
+    );
+  } catch (error) {
+    console.error("Error handling google callback get:", error);
+
+    res.redirect("http://localhost:5173/auth/sign-in");
+  }
+}
