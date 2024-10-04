@@ -2,7 +2,12 @@ import { Request, Response } from "express";
 import { User } from "@prisma/client";
 import { body, validationResult } from "express-validator";
 
-import { readTaskGroups, createTask, createTaskGroup } from "../db";
+import {
+  readTaskGroups,
+  createTask,
+  createTaskGroup,
+  readTaskGroup,
+} from "../db";
 
 export async function handleUserDataGet(req: Request, res: Response) {
   const { id, firstName, lastName, email } = req.user as User;
@@ -66,6 +71,14 @@ export const handleTaskGroupsPost = [
     const { id } = req.user as User;
 
     try {
+      const taskGroupExists = await readTaskGroup(name, id);
+
+      if (taskGroupExists) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "Task Group already exists!" }] });
+      }
+
       const newTaskGroup = await createTaskGroup(name, id);
 
       res.status(201).json({
