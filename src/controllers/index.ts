@@ -7,6 +7,7 @@ import {
   createTask,
   createTaskGroup,
   readTaskGroup,
+  readTask,
 } from "../db";
 
 export async function handleUserDataGet(req: Request, res: Response) {
@@ -38,6 +39,13 @@ export const handleTasksPost = [
     const taskGroupId = task.groupId;
 
     try {
+      const taskExists = await readTask(task.title, taskGroupId);
+
+      if (taskExists) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "Task already exists!" }] });
+      }
       const newTask = await createTask(task, id, taskGroupId);
 
       res.status(201).json({

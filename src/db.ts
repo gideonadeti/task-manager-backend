@@ -239,3 +239,19 @@ export async function readTaskGroup(name: string, userId: string) {
     throw error;
   }
 }
+
+export async function readTask(title: string, taskGroupId: string) {
+  try {
+    const task = await prisma.task.findFirst({
+      where: {
+        title,
+        taskGroupId,
+      },
+    });
+
+    return task !== null;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
