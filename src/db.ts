@@ -207,3 +207,19 @@ export async function createUserFromGoogle(
     throw error;
   }
 }
+
+export async function createTaskGroup(name: string, userId: string) {
+  try {
+    const newTaskGroup = await prisma.taskGroup.create({
+      data: {
+        name,
+        userId,
+      },
+    });
+
+    return newTaskGroup;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
